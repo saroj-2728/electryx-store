@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { ThemeProvider } from "@/context/ThemeContext";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import { poppins, allertaStencil } from "./fonts/fonts";
+import { SessionWrapper } from "@/context/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "Himalayan Threads",
@@ -28,11 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-back-light dark:bg-back-dark`}
+        className={`${poppins.variable} ${allertaStencil.variable} font-sans antialiased bg-back-light dark:bg-back-dark text-txt-light dark:text-txt-dark`}
       >
         <ThemeProvider>
-          <Navbar />
-          {children}
+          <SessionWrapper>
+            <Navbar />
+            {children}
+          </SessionWrapper>
         </ThemeProvider>
       </body>
     </html>
