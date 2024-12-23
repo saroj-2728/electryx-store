@@ -1,19 +1,19 @@
 'use client'
-import { SignIn } from "@/app/sign-in/Signin"
-import { useSession } from "next-auth/react";
+import { SignIn } from "@/components/Auth/Signin";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useSession } from "@/components/Auth/Signin";
 
 const SignInPage = () => {
 
     const { data: session } = useSession()
     const router = useRouter()
 
-    useEffect(() => {
-        if (session)
-            router.push('/')
-    }, [session])
+    // useEffect(() => {
+    //     if (session)
+    //         router.push('/')
+    // }, [session])
 
     return (
         <div className="flex items-center justify-center min-h-screen">

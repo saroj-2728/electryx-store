@@ -1,25 +1,27 @@
-"use client"
+'use client'
 import { FaGithub, FaFacebook } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-import { signIn, useSession } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
 import { LoaderSec } from "@/components/Loader"
+import type { Message } from "./Signup"
+import { handleSocialSignIn } from "./Signup"
 
-export type Provider = 'facebook' | 'github' | 'google'
+export const signIn = async (provider: string, options: any) => {}
 
-export interface Message {
-    success: string
-    error: string
+export const useSession = () => {
+    return {
+        data: {
+            user: {}
+        },
+        status: {}
+    }
 }
 
-export const handleSocialSignIn = async (provider: Provider) => {
-    await signIn(provider, { redirectTo: '/' })
-}
-
-export const SignUp = () => {
+export const SignIn = () => {
 
     const [email, setEmail] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
     const [message, setMessage] = useState<Message>({ success: "", error: "" })
     const [loading, setLoading] = useState<boolean>(false)
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -42,10 +44,10 @@ export const SignUp = () => {
             })
 
             if (result?.ok) {
-                setMessage(prev => ({ ...prev, success: "Check your email for the sign-up link!" }))
+                setMessage(prev => ({ ...prev, success: "Check your email for the sign-in link!" }))
             }
             else {
-                setMessage(prev => ({ ...prev, error: "Sign-up failed. Please try again." }));
+                setMessage(prev => ({ ...prev, error: "Sign-in failed. Please try again." }));
             }
         }
         catch (error) {
@@ -56,9 +58,8 @@ export const SignUp = () => {
         }
     }
 
-
     return (
-        <div className="border bg-back-light dark:bg-back-dark border-brd-light dark:border-brd-dark max-w-xs p-3 py-5 rounded-xl flex items-center justify-center shadow-light-card dark:shadow-dark-card animate-in zoom-in-0 transition-all duration-300 text-sm">
+        <div className="border bg-back-light dark:bg-back-dark border-brd-light dark:border-brd-dark max-w-xs p-3 py-5 rounded-xl flex items-center justify-center shadow-light-card animate-in zoom-in-0 transition-all duration-300 text-sm">
             <form
                 onSubmit={resendAction}
                 className="w-full p-3"
@@ -66,7 +67,7 @@ export const SignUp = () => {
 
                 <div className="options w-full mb-6">
                     <div className="text-center font-allertaStencil">
-                        {message.success ? "Complete Your Sign-Up" : "Sign Up and Start Shopping!"}
+                        {message.success ? "Verify Your Sign-In" : "Welcome Back! Let's Get Started."}
                     </div>
                 </div>
 
@@ -77,13 +78,24 @@ export const SignUp = () => {
                     :
                     <div className="w-full space-y-4">
 
-                        <div className="creds w-full flex justify-center items-center">
+                        <div className="creds w-full flex flex-col gap-2 justify-center items-center">
+
                             <div className="w-full">
                                 <input
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="px-3 py-2 text-xs rounded-lg bg-back-light dark:bg-back-dark w-full h-full border-2 border-brd-light dark:border-brd-dark focus:border-btn-bg dark:focus:border-btn-dark-bg focus:outline-none"
+                                    className="px-3 py-2 rounded-lg text-xs bg-back-light dark:bg-back-dark w-full h-full border-2 border-brd-light dark:border-brd-dark focus:border-btn-bg dark:focus:border-btn-dark-bg focus:outline-none"
                                     placeholder="Enter your email address"
+                                    type="email" id="email-resend" name="email"
+                                />
+                            </div>
+
+                            <div className="w-full">
+                                <input
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="px-3 py-2 rounded-lg text-xs bg-back-light dark:bg-back-dark w-full h-full border-2 border-brd-light dark:border-brd-dark focus:border-btn-bg dark:focus:border-btn-dark-bg focus:outline-none"
+                                    placeholder="Enter your password"
                                     type="email" id="email-resend" name="email"
                                 />
                             </div>
@@ -96,7 +108,7 @@ export const SignUp = () => {
                                 className={`w-full py-2.5 bg-btn-bg dark:bg-btn-dark-bg text-btn-txt dark:text-btn-dark-txt rounded-lg ${!loading ? "hover:opacity-70" : ""}  transition duration-300 flex items-center justify-center disabled:bg-btn-bg/50`}
                             >
                                 {
-                                    loading ? <LoaderSec size="w-5" /> : "Sign up"
+                                    loading ? <LoaderSec size="w-5" /> : "Sign in"
                                 }
                             </button>
                         </div>
@@ -108,9 +120,8 @@ export const SignUp = () => {
                         }
 
                         <div className="w-full text-center">
-                            <p className="text-xs">
-                                Already have an account? {" "}
-                                <Link href={'/sign-in'} className="hover:text-btn-bg hover:dark:text-btn-dark-bg transition duration-300">Sign in</Link>
+                            <p className="text-xs">Don't have an account?  {" "}
+                                <Link href={'/user/sign-up'} className="hover:text-btn-bg hover:dark:text-btn-dark-bg transition duration-300">Sign up</Link>
                             </p>
                         </div>
 
@@ -137,8 +148,8 @@ export const SignUp = () => {
                                 <FaFacebook className="text-[#1877F2] w-5 h-5" />
                                 <p>Facebook</p>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 }
             </form>

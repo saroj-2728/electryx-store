@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { poppins, allertaStencil } from "./fonts/fonts";
-import { SessionWrapper } from "@/context/SessionWrapper";
 
 export const metadata: Metadata = {
-  title: "Himalayan Threads",
+  title: "Electryx Store",
   description: "A store",
 };
 
@@ -21,10 +21,9 @@ export default function RootLayout({
         className={`${poppins.variable} ${allertaStencil.variable} font-sans antialiased bg-back-light dark:bg-back-dark text-txt-light dark:text-txt-dark`}
       >
         <ThemeProvider>
-          <SessionWrapper>
             <Navbar />
             {children}
-          </SessionWrapper>
+            <Footer />
         </ThemeProvider>
       </body>
     </html>
