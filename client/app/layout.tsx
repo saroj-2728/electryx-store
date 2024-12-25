@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { poppins, allertaStencil } from "./fonts/fonts";
 import { SessionWrapper } from "@/context/SessionWrapper";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Himalayan Threads",
@@ -25,6 +26,7 @@ export default function RootLayout({
             <Navbar />
             {children}
           </SessionWrapper>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

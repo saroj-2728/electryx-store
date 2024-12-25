@@ -43,14 +43,6 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-}
-
 model UserProfile {
   id     String @id @default(cuid())
   userId String @unique

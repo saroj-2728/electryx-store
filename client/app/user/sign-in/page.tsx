@@ -1,11 +1,11 @@
 'use client'
-import { SignUp } from "@/app/sign-up/Signup";
+import { SignIn } from "@/components/Auth/Signin";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-const SignUpPage = () => {
+const SignInPage = () => {
 
     const { data: session } = useSession()
     const router = useRouter()
@@ -20,21 +20,21 @@ const SignUpPage = () => {
             <div className="flex items-center justify-center gap-10 w-full mx-auto shadow-lg overflow-hidden bg-accent-light dark:bg-accent-dark">
 
                 <div className="hidden md:flex flex-col justify-center items-center w-1/2 text-white p-10">
-                    <h1 className="text-3xl font-bold mb-4 animate-in fade-in duration-700 font-allertaStencil">Join Us!</h1>
-                    <p className="text-base animate-in fade-in duration-1000">Sign up to join our community and begin experiencing everything we have in store for you.</p>
-                    <div className="pt-10 mb-8 w-64 h-64 transform rotate-12 animate-in duration-500">
+                    <h1 className="text-3xl font-bold mb-4 animate-in fade-in duration-700 font-allertaStencil">Welcome Back!</h1>
+                    <p className="text-base animate-in fade-in duration-1000">Sign in to resume where you left off and explore new features tailored just for you.</p>
+                    <div className="pt-14 w-72 h-72 transform -rotate-12 animate-in duration-500">
                         <Image
-                            src="/images/signUpImage.jpg"
+                            src="/images/signInImage.jpg"
                             height={500}
                             width={500}
-                            alt="Sign up Illustration"
+                            alt="Illustration"
                             className="object-contain rounded-lg"
                         />
                     </div>
                 </div>
 
                 <div className="w-[30%]">
-                    <SignUp />
+                    <SignIn />
                 </div>
 
             </div>
@@ -42,4 +42,4 @@ const SignUpPage = () => {
     );
 }
 
-export default SignUpPage;
+export default SignInPage;

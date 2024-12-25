@@ -1,10 +1,10 @@
-"use client"
+'use client'
 import { FaGithub, FaFacebook } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-import { signIn, useSession } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
 import { LoaderSec } from "@/components/Loader"
+import { signInWithMagicLink, signInWithOAuth } from "@/actions/auth/auth"
 
 export type Provider = 'facebook' | 'github' | 'google'
 
@@ -13,52 +13,32 @@ export interface Message {
     error: string
 }
 
-export const handleSocialSignIn = async (provider: Provider) => {
-    await signIn(provider, { redirectTo: '/' })
-}
-
-export const SignUp = () => {
+export const SignIn = ({ isSellerComp }: { isSellerComp?: boolean }) => {
 
     const [email, setEmail] = useState<string>("")
     const [message, setMessage] = useState<Message>({ success: "", error: "" })
     const [loading, setLoading] = useState<boolean>(false)
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     const resendAction = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!emailRegex.test(email)) {
-            setMessage(prev => ({ ...prev, error: "Please enter a valid email address!" }));
-            return
-        };
-
-        setMessage({ success: "", error: "" })
         setLoading(true)
 
-        try {
-            const result = await signIn("resend", {
-                email,
-                redirect: false,
-                redirectTo: '/'
-            })
+        setMessage({ success: "", error: "" })
 
-            if (result?.ok) {
-                setMessage(prev => ({ ...prev, success: "Check your email for the sign-up link!" }))
-            }
-            else {
-                setMessage(prev => ({ ...prev, error: "Sign-up failed. Please try again." }));
-            }
-        }
-        catch (error) {
-            setMessage(prev => ({ ...prev, error: "An unexpected error occurred. Please try again." }));
-        }
-        finally {
-            setLoading(false)
-        }
+        const role = isSellerComp ? 'seller' : 'user'
+        const result = await signInWithMagicLink(email, 'in', role)
+        setMessage(result)
+
+        setLoading(false)
     }
 
+    const oauthSignIn = async (provider: Provider) => {
+        const role = isSellerComp ? 'seller' : 'user'
+        await signInWithOAuth(provider, role)
+    }
 
     return (
-        <div className="border bg-back-light dark:bg-back-dark border-brd-light dark:border-brd-dark max-w-xs p-3 py-5 rounded-xl flex items-center justify-center shadow-light-card dark:shadow-dark-card animate-in zoom-in-0 transition-all duration-300 text-sm">
+        <div className="border bg-back-light dark:bg-back-dark border-brd-light dark:border-brd-dark max-w-xs p-3 py-5 rounded-xl flex items-center justify-center shadow-light-card animate-in zoom-in-0 transition-all duration-300 text-sm">
             <form
                 onSubmit={resendAction}
                 className="w-full p-3"
@@ -66,7 +46,7 @@ export const SignUp = () => {
 
                 <div className="options w-full mb-6">
                     <div className="text-center font-allertaStencil">
-                        {message.success ? "Complete Your Sign-Up" : "Sign Up and Start Shopping!"}
+                        {message.success ? "Verify Your Sign-In" : isSellerComp ? "Get started with your Seller Account" : "Welcome Back! Let's Get Started."}
                     </div>
                 </div>
 
@@ -77,12 +57,14 @@ export const SignUp = () => {
                     :
                     <div className="w-full space-y-4">
 
-                        <div className="creds w-full flex justify-center items-center">
+                        <div className="creds w-full flex flex-col justify-center items-center">
+
                             <div className="w-full">
                                 <input
                                     value={email}
+                                    disabled={loading}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="px-3 py-2 text-xs rounded-lg bg-back-light dark:bg-back-dark w-full h-full border-2 border-brd-light dark:border-brd-dark focus:border-btn-bg dark:focus:border-btn-dark-bg focus:outline-none"
+                                    className="px-3 py-2 rounded-lg text-xs bg-back-light dark:bg-back-dark w-full h-full border-2 border-brd-light dark:border-brd-dark focus:border-btn-bg dark:focus:border-btn-dark-bg focus:outline-none"
                                     placeholder="Enter your email address"
                                     type="email" id="email-resend" name="email"
                                 />
@@ -96,7 +78,7 @@ export const SignUp = () => {
                                 className={`w-full py-2.5 bg-btn-bg dark:bg-btn-dark-bg text-btn-txt dark:text-btn-dark-txt rounded-lg ${!loading ? "hover:opacity-70" : ""}  transition duration-300 flex items-center justify-center disabled:bg-btn-bg/50`}
                             >
                                 {
-                                    loading ? <LoaderSec size="w-5" /> : "Sign up"
+                                    loading ? <LoaderSec size="w-5" /> : "Sign in"
                                 }
                             </button>
                         </div>
@@ -108,9 +90,8 @@ export const SignUp = () => {
                         }
 
                         <div className="w-full text-center">
-                            <p className="text-xs">
-                                Already have an account? {" "}
-                                <Link href={'/sign-in'} className="hover:text-btn-bg hover:dark:text-btn-dark-bg transition duration-300">Sign in</Link>
+                            <p className="text-xs">Don't have an account?  {" "}
+                                <Link href={'/user/sign-up'} className="hover:text-btn-bg hover:dark:text-btn-dark-bg transition duration-300">Sign up</Link>
                             </p>
                         </div>
 
@@ -118,27 +99,27 @@ export const SignUp = () => {
 
                         <div className="w-full flex flex-row items-center justify-center gap-3 text-xs">
                             <div
-                                onClick={() => handleSocialSignIn('google')}
+                                onClick={() => oauthSignIn('google')}
                                 className="flex justify-center items-center gap-1 cursor-pointer">
                                 <FcGoogle className="w-5 h-5" />
                                 <p>Google</p>
                             </div>
 
                             <div
-                                onClick={() => handleSocialSignIn('github')}
+                                onClick={() => oauthSignIn('github')}
                                 className="flex justify-center items-center gap-1 cursor-pointer">
                                 <FaGithub className="w-5 h-5" />
                                 <p>Github</p>
                             </div>
 
                             <div
-                                onClick={() => handleSocialSignIn('facebook')}
+                                onClick={() => oauthSignIn('facebook')}
                                 className="flex justify-center items-center gap-1 cursor-pointer">
                                 <FaFacebook className="text-[#1877F2] w-5 h-5" />
                                 <p>Facebook</p>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 }
             </form>
