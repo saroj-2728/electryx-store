@@ -55,6 +55,7 @@ model UserProfile {
   id     String @id @default(cuid())
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String?
 
   address     String?
   phoneNumber String?
@@ -69,6 +70,7 @@ model SellerProfile {
   id     String @id @default(cuid())
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String?
 
   storeName   String
   storeLogo   String?

@@ -67,7 +67,8 @@ export const {
         if (user.role === 'user') {
           await prisma.userProfile.create({
             data: {
-              userId: user.id as string
+              userId: user.id as string,
+              name: user.name ? user.name as string : ""
             }
           })
         }
@@ -75,6 +76,7 @@ export const {
           await prisma.sellerProfile.create({
             data: {
               userId: user.id as string,
+              name: user.name ? user.name as string : "",
               storeName: ""
             }
           })

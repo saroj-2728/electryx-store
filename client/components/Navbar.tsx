@@ -75,23 +75,54 @@ const Navbar = () => {
 
             <div className="flex flex-row gap-4 justify-around items-center">
 
-                {session &&
-                    <Link
-                        href={'/my-cart'}
-                        className="cursor-pointer hover:opacity-60 transition duration-300">
-                        My cart
-                    </Link>
+                {(session?.user?.role === 'user') &&
+                    <>
+                        <Link
+                            href={'/'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            Home
+                        </Link>
+                        <Link
+                            href={'/my-cart'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            My cart
+                        </Link>
+                        <Link
+                            href={'/user/profile?tab=orders'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            My orders
+                        </Link>
+                    </>
                 }
 
-                {!(session?.user?.role === 'seller') &&
-                    <Link
-                        href={'/seller/sign-in'}
-                        className="cursor-pointer hover:opacity-60 transition duration-300"> Become a Seller </Link>
+                {(session?.user?.role === 'seller') &&
+                    <>
+                        <Link
+                            href={'/seller/dashboard'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            Dashboard
+                        </Link>
+                        <Link
+                            href={'/seller/orders'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            Orders
+                        </Link>
+                        <Link
+                            href={'/seller/manage-products'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            Products
+                        </Link>
+                    </>
                 }
-                <div className="cursor-pointer hover:opacity-60 transition duration-300"> Help and Support </div>
 
                 {!session &&
                     <>
+                        <Link
+                            href={'/seller/sign-in'}
+                            className="cursor-pointer hover:opacity-60 transition duration-300">
+                            Become a Seller
+                        </Link>
+
                         <Link
                             href={'/user/sign-in'}
                             className="cursor-pointer hover:opacity-60 transition duration-300">
@@ -105,6 +136,8 @@ const Navbar = () => {
                         </Link>
                     </>
                 }
+
+                <div className="cursor-pointer hover:opacity-60 transition duration-300"> Help and Support </div>
 
                 <div className="flex items-center">
                     <button
@@ -172,15 +205,15 @@ const Navbar = () => {
                                     onClick={togglePopup}
                                     className="w-full flex flex-col justify-center items-center cursor-pointer">
                                     <Link
-                                        href={'/user/profile'}
+                                        href={`/${session?.user?.role}/profile`}
                                         className="text-center py-2.5 border-y border-brd-light dark:border-brd-dark w-full hover:bg-hvr-light dark:hover:bg-hvr-dark transition duration-300 hover:opacity-60">
-                                        My account
+                                        {session?.user?.role === 'user' ? "My account" : "Account"}
                                     </Link>
 
                                     <Link
-                                        href={'/user/profile?tab=orders'}
+                                        href={session?.user?.role === 'user' ? "/user/profile?tab=orders" : "/seller/inventory"}
                                         className="text-center py-2.5 border-b border-brd-light dark:border-brd-dark w-full hover:bg-hvr-light dark:hover:bg-hvr-dark transition duration-300 hover:opacity-60">
-                                        My orders
+                                        {session?.user?.role === 'user' ? "My orders" : "Inventory"}
                                     </Link>
 
                                     <div

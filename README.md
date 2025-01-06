@@ -1,1 +1,1 @@
-# himalayan-threads-store
+# store

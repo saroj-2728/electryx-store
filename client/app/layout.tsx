@@ -7,7 +7,7 @@ import { SessionWrapper } from "@/context/SessionWrapper";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Himalayan Threads",
+  title: "Electryx Store",
   description: "A store",
 };
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${allertaStencil.variable} font-sans antialiased bg-back-light dark:bg-back-dark text-txt-light dark:text-txt-dark`}
+        className={`${poppins.variable} ${allertaStencil.variable} font-sans antialiased bg-back-light dark:bg-back-dark text-txt-light dark:text-txt-dark max-w-[1440px] mx-auto w-full`}
       >
         <ThemeProvider>
           <SessionWrapper>
