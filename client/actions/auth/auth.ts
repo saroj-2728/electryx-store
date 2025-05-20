@@ -1,7 +1,9 @@
 'use server'
+import { cookies } from "next/headers"
 import { signIn } from "@/auth"
 import { AuthError } from "next-auth"
 import type { Message } from "@/components/Auth/Signin"
+import { prisma } from "@/prisma"
 
 export type Provider = 'facebook' | 'github' | 'google'
 
@@ -13,13 +15,9 @@ type oauthFunc = (provider: Provider, role: UserRole) => Promise<void>;
 
 type magicLinkFunc = (email: string, action: Action, role?: UserRole) => Promise<Message>;
 
-declare global {
-    var authRole: UserRole | undefined
-}
-
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-export const signInWithMagicLink: magicLinkFunc = async (email: string, action: Action, role?: UserRole) => {
+export const signInWithMagicLink: magicLinkFunc = async (email: string, action: Action, role: UserRole = 'user') => {
 
     if (!emailRegex.test(email)) {
         return {
@@ -28,29 +26,33 @@ export const signInWithMagicLink: magicLinkFunc = async (email: string, action: 
         }
     };
 
-    globalThis.authRole = "seller"
-
     try {
+
+        await prisma.pendingRole.delete({
+            where: {
+                email
+            }
+        });
+
+        await prisma.pendingRole.create({
+            data: {
+                email,
+                role,
+                createdAt: new Date()
+            }
+        });
+
         const result = await signIn("resend", {
             email,
             redirect: false,
-            redirectTo: `/`
+            redirectTo: `/`,
         })
 
         const response = await fetch(result)
 
-        if (response?.ok) {
-            return {
-                success: `Check your email for the sign-${action} link!`,
-                error: ""
-            }
-        }
-        else {
-            return {
-                error: `Sign-${action}  failed. Please try again.`,
-                success: ""
-            }
-        }
+        return response?.ok
+            ? { success: `Check your email for the sign-${action} link!`, error: "" }
+            : { error: `Sign-${action} failed. Please try again.`, success: "" }
     }
     catch (error) {
         if (error instanceof AuthError) {
@@ -65,7 +67,13 @@ export const signInWithMagicLink: magicLinkFunc = async (email: string, action: 
 
 
 export const signInWithOAuth: oauthFunc = async (provider: Provider, role: UserRole) => {
-    globalThis.authRole = role
+
+    const cookieStore = await cookies()
+    cookieStore.set('authRole', role as UserRole, {
+        maxAge: 24 * 60 * 60,
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+    })
 
     await signIn(provider, {
         redirectTo: '/',

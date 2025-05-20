@@ -51,6 +51,16 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+// To save role for magic link sign in temporarily as session cookies do not persist for different sessions
+model PendingRole {
+  id        String   @id @default(cuid())
+  email     String
+  role      String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 model UserProfile {
   id     String @id @default(cuid())
   userId String @unique
